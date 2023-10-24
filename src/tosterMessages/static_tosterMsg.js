@@ -38,6 +38,6 @@ export const createToast = (id, message) => {
                          <span>${message}</span>
                       </div>
                       <i class="fa-solid fa-xmark" onclick="removeToast(this.parentElement)"></i>`;
-  notifications.appendChild(toast);
+  document.getElementById("notify").appendChild(toast);
   toast.timeoutId = setTimeout(() => removeToast(toast), toastDetails.timer);
 };

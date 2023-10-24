@@ -17,6 +17,7 @@ import { db } from "../firebase";
 // import styling for chats using styled-components
 import { UserChat, UserChatInfo } from "../css/ChatsCss";
 import { AuthContext } from "../context/AuthContext";
+import { createToast } from "../tosterMessages/static_tosterMsg";
 
 const Search = () => {
   // useState hook to handle user name state, setUser state,  and handle err state
@@ -26,7 +27,9 @@ const Search = () => {
 
   const { currentUser } = useContext(AuthContext);
 
+  // searched for user in the firebase
   const handleSearch = async () => {
+    // get the collection of the searched user for the firebase
     const q = query(
       collection(db, "users"),
       where("displayName", "==", userName)
@@ -34,11 +37,17 @@ const Search = () => {
 
     try {
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        setUser(doc.data());
-      });
-    } catch (err) {
-      setErr(true);
+      // get the query Snapshot of the searched user if not found how message user not found
+      if (querySnapshot.size != 0) {
+        querySnapshot.forEach((doc) => {
+          setUser(doc.data());
+        });
+      } else {
+        // toster message if the user is not found
+        createToast("info", "No Chat Found for searched user");
+      }
+    } catch (error) {
+      createToast("error", error.code);
     }
   };
 
@@ -81,11 +90,21 @@ const Search = () => {
         });
       }
     } catch (error) {
-      console.log("error", error);
+      createToast("error", error.code);
     }
 
     setUser(null);
     setUserName("");
+  };
+
+  const handlseSetUser = (e) => {
+    if (e.target.value == "") {
+      setUser(null);
+      setUserName("");
+      // setErr(false);
+    } else {
+      setUserName(e.target.value);
+    }
   };
 
   return (
@@ -95,9 +114,7 @@ const Search = () => {
           type="text"
           value={userName}
           onKeyDown={handleKeySubmit}
-          onChange={(e) =>
-            e.target.value === "" ? setUser(null) : setUserName(e.target.value)
-          }
+          onChange={(e) => handlseSetUser(e)}
           placeholder="Find Chats"
         />
         {err && <span>User not found!</span>}

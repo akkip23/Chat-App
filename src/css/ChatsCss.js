@@ -9,6 +9,8 @@ export const ChatContainer = styled.div`
 // styling for main chat container
 export const UserChat = styled.div`
   display: flex;
+  padding: 5px;
+  cursor: pointer;
   img {
     background: #ddddf7;
     height: 50px;
