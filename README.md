@@ -24,10 +24,10 @@
 
 ### Technologies Used
 
-React.js
-React Router
-Styled Component
-firebase
+1. React.js
+2. React Router
+3. Styled Component
+4. firebase
 
 ### Features
 
