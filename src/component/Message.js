@@ -43,8 +43,8 @@ const Message = ({ message }) => {
       <MessageContent
         isOwner={message.senderId === currentUser.uid ? "owner" : "message"}
       >
-        <p>{message.text}</p>
         {message.img && <img src={message.img} alt="" />}
+        <p>{message.text}</p>
       </MessageContent>
     </MessageContainer>
   );

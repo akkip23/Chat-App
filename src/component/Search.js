@@ -23,7 +23,6 @@ const Search = () => {
   // useState hook to handle user name state, setUser state,  and handle err state
   const [userName, setUserName] = useState("");
   const [user, setUser] = useState(null);
-  const [err, setErr] = useState(false);
 
   const { currentUser } = useContext(AuthContext);
 
@@ -101,7 +100,6 @@ const Search = () => {
     if (e.target.value == "") {
       setUser(null);
       setUserName("");
-      // setErr(false);
     } else {
       setUserName(e.target.value);
     }
@@ -117,7 +115,6 @@ const Search = () => {
           onChange={(e) => handlseSetUser(e)}
           placeholder="Find Chats"
         />
-        {err && <span>User not found!</span>}
         {user && (
           <SearchedUser>
             <UserChat onClick={handleSelect}>
