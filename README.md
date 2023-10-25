@@ -1,4 +1,4 @@
-<h1 align="center">Employee Review System</h1>
+<h1 align="center">ChatPulse</h1>
  
 ### Description
 

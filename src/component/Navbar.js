@@ -21,7 +21,7 @@ const Navbar = () => {
       <NavbarContainer>
         <div>
           {/* chat Name */}
-          <p>Lama Chat</p>
+          <p>ChatPulse</p>
         </div>
         <main>
           {/* view curent Authenticated user profile Photo */}
