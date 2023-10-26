@@ -32,5 +32,9 @@ export const UserChatInfo = styled.div`
     margin-top: 2px;
     font-size: 14px;
     color: lightgray;
+    white-space: nowrap;
+    width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;

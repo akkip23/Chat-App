@@ -3,7 +3,8 @@ import styled from "styled-components";
 
 // styling for main home body container
 export const HomeBody = styled.div`
-  background: #a7bcff;
+  // background: #a7bcff;
+  background-image: url("https://cdn2.f-cdn.com/contestentries/2046262/58571795/61f00c583e000_thumb900.jpg");
   height: 100vh;
   display: flex;
   align-items: center;

@@ -9,7 +9,7 @@ export const ChatContainer = styled.div`
 // style for main chat container
 export const ChatInfo = styled.div`
   height: 50px;
-  background-color: #5d5b8d;
+  background-color: #02020691;
   display: flex;
   align-items: center;
   justify-content: space-between;

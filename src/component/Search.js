@@ -36,7 +36,7 @@ const Search = () => {
 
     try {
       const querySnapshot = await getDocs(q);
-      // get the query Snapshot of the searched user if not found how message user not found
+      // get the query Snapshot of the searched user if not found show message user not found
       if (querySnapshot.size != 0) {
         querySnapshot.forEach((doc) => {
           setUser(doc.data());

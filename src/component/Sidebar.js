@@ -1,6 +1,6 @@
 import React from "react";
 // import styling for search using styled-components
-import { SidebarContainer } from "../css/SideBarCss";
+import { SidebarContainer, AddNewChat } from "../css/SideBarCss";
 // navBar component import
 import Navbar from "./Navbar";
 // mport search bar component

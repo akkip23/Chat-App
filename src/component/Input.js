@@ -27,82 +27,89 @@ const Input = () => {
   const { data } = useContext(ChatContext);
 
   const handleSend = async () => {
-    if (img) {
-      const storageRef = ref(storage, uuid());
+    if (text != "" && data.user.displayName != undefined) {
+      if (img) {
+        const storageRef = ref(storage, uuid());
 
-      const uploadTask = uploadBytesResumable(storageRef, img);
+        const uploadTask = uploadBytesResumable(storageRef, img);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          // Observe state change events such as progress, pause, and resume
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-          }
-        },
-        (error) => {
-          //TODO:Handle Error
-        },
-        async () => {
-          // get the download url when the image gets uploaded to the firebase server
-          await getDownloadURL(uploadTask.snapshot.ref).then(
-            async (downloadURL) => {
-              // update chats on user input when user send the chat with image
-              await updateDoc(doc(db, "chats", data.chatId), {
-                messages: arrayUnion({
-                  id: uuid(),
-                  text,
-                  senderId: currentUser.uid,
-                  date: Timestamp.now(),
-                  img: downloadURL,
-                }),
-              }).then(() => {
-                createToast("success", "Message send SuccessFully");
-              });
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
             }
-          );
-        }
-      );
-    } else {
-      // update chats on user input when user send the chat without image
-      await updateDoc(doc(db, "chats", data.chatId), {
-        messages: arrayUnion({
-          id: uuid(),
+          },
+          (error) => {
+            //TODO:Handle Error
+          },
+          async () => {
+            // get the download url when the image gets uploaded to the firebase server
+            await getDownloadURL(uploadTask.snapshot.ref).then(
+              async (downloadURL) => {
+                // update chats on user input when user send the chat with image
+                await updateDoc(doc(db, "chats", data.chatId), {
+                  messages: arrayUnion({
+                    id: uuid(),
+                    text,
+                    senderId: currentUser.uid,
+                    date: Timestamp.now(),
+                    img: downloadURL,
+                  }),
+                }).then(() => {
+                  createToast("success", "Message send SuccessFully");
+                });
+              }
+            );
+          }
+        );
+      } else {
+        // update chats on user input when user send the chat without image
+        await updateDoc(doc(db, "chats", data.chatId), {
+          messages: arrayUnion({
+            id: uuid(),
+            text,
+            senderId: currentUser.uid,
+            date: Timestamp.now(),
+          }),
+        })
+          .then(() => {
+            createToast("success", "Message send SuccessFully");
+          })
+          .catch((error) => {
+            console.error("Error updating document: ", error);
+            return;
+          });
+      }
+
+      // update user last message
+      await updateDoc(doc(db, "userChats", currentUser.uid), {
+        [data.chatId + ".lastMessage"]: {
           text,
-          senderId: currentUser.uid,
-          date: Timestamp.now(),
-        }),
-      }).then(() => {
-        createToast("success", "Message send SuccessFully");
+        },
+        [data.chatId + ".date"]: serverTimestamp(),
       });
+
+      await updateDoc(doc(db, "userChats", data.user.uid), {
+        [data.chatId + ".lastMessage"]: {
+          text,
+        },
+        [data.chatId + ".date"]: serverTimestamp(),
+      });
+
+      setText("");
+      setImg(null);
     }
-
-    // update user last message
-    await updateDoc(doc(db, "userChats", currentUser.uid), {
-      [data.chatId + ".lastMessage"]: {
-        text,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
-
-    await updateDoc(doc(db, "userChats", data.user.uid), {
-      [data.chatId + ".lastMessage"]: {
-        text,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
-
-    setText("");
-    setImg(null);
   };
 
   return (
@@ -113,6 +120,7 @@ const Input = () => {
         placeholder="Type Something..."
         onChange={(e) => setText(e.target.value)}
         value={text}
+        required
       />
       <SendMessage>
         <img
