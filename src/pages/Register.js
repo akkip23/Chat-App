@@ -19,14 +19,19 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 // import toster function
 import { createToast } from "../tosterMessages/static_tosterMsg";
-
+import "../loader/loader.css";
 // Sign up and setup new user Account
 function Register() {
   const navigate = useNavigate();
 
+  // function hideLoader() {
+  //   document.getElementById("loader_Container").style.display = "none";
+  // }
+
   // handle submit when user tries to submit the login form
   async function handleSubmit(e) {
     e.preventDefault();
+    document.getElementById("loader_Container").style.display = "block";
     const displayName = e.target[0].value;
     const email = e.target[1].value;
     const password = e.target[2].value;
@@ -85,7 +90,8 @@ function Register() {
                   });
 
                   await setDoc(doc(db, "userChats", res.user.uid), {});
-
+                  document.getElementById("loader_Container").style.display =
+                    "none";
                   navigate("/");
                 }
               );
@@ -94,6 +100,15 @@ function Register() {
         })
         .catch((error) => {
           console.log("catch error for Auth", error);
+
+          // Check for error codes to determine the type of error
+          if (error.code === "auth/email-already-in-use") {
+            createToast("error", "user aready exist with this email id");
+            navigate("/login");
+          } else {
+            createToast("error", error.code);
+          }
+          document.getElementById("loader_Container").style.display = "none";
         });
     } catch (error) {
       console.log("catch error", error);
@@ -103,6 +118,10 @@ function Register() {
 
   return (
     <>
+      <div style={{ display: "none" }} id="loader_Container">
+        <div id="loader"></div>
+      </div>
+      {/* <div style={{ display: "none" }} id="myDiv" className="animate-bottom"> */}
       <SignUpBodyContainer>
         <SignUpConatiner>
           <h2>SIGN UP</h2>
@@ -165,6 +184,7 @@ function Register() {
           </form>
         </SignUpConatiner>
       </SignUpBodyContainer>
+      {/* </div> */}
     </>
   );
 }

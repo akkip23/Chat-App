@@ -1,0 +1,43 @@
+/* Center the loader */
+#loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 120px;
+  height: 120px;
+  margin: -76px 0 0 -76px;
+  border: 16px solid #2196f330;
+  border-radius: 50%;
+  border-top: 16px solid #03a9f48a;
+  border-bottom: 16px solid #03a9f48a;
+  animation: spin 2s linear infinite;
+
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#loader_Container {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(211, 211, 211, 0.5);
+}
