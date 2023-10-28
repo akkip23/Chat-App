@@ -4,6 +4,8 @@ import { styled } from "styled-components";
 // styling for main chats container body
 export const ChatContainer = styled.div`
   padding: 20px 10px;
+  height: 67%;
+  overflow-y: scroll;
 `;
 
 // styling for main chat container
