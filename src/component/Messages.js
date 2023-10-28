@@ -31,7 +31,7 @@ const Messages = () => {
   // console.log(messages);
   return (
     <MessageContainer>
-      {messages.map((m) => (
+      {messages?.map((m) => (
         <Message message={m} key={m.id} />
       ))}
     </MessageContainer>

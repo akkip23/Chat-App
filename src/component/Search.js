@@ -23,24 +23,28 @@ const Search = () => {
   // useState hook to handle user name state, setUser state,  and handle err state
   const [userName, setUserName] = useState("");
   const [user, setUser] = useState(null);
+  // const [selectedUser, setSelectedUser] = useState("");
+  const userData = [];
 
   const { currentUser } = useContext(AuthContext);
 
   // searched for user in the firebase
   const handleSearch = async () => {
-    // get the collection of the searched user for the firebase
-    const q = query(
-      collection(db, "users"),
-      where("displayName", "==", userName)
-    );
-
+    const querySnapshot = await getDocs(collection(db, "users"));
+    console.log(querySnapshot.size);
     try {
-      const querySnapshot = await getDocs(q);
       // get the query Snapshot of the searched user if not found show message user not found
-      if (querySnapshot.size != 0) {
-        querySnapshot.forEach((doc) => {
-          setUser(doc.data());
-        });
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        userData.push(doc.data());
+      });
+
+      const filteredUserData = userData.filter((userData) =>
+        userData.displayName.toLowerCase().includes(userName)
+      );
+
+      if (filteredUserData.length > 0) {
+        setUser(filteredUserData);
       } else {
         // toster message if the user is not found
         createToast("info", "No Chat Found for searched user");
@@ -55,31 +59,35 @@ const Search = () => {
     e.code === "Enter" && handleSearch();
   };
 
-  const handleSelect = async () => {
+  const handleSelect = async (selUser) => {
     //check whether the group exists if not create
-
     const combinedId =
-      currentUser.uid > user.uid
-        ? currentUser.uid + user.uid
-        : user.uid + currentUser.uid;
+      currentUser.uid > selUser.uid
+        ? currentUser.uid + selUser.uid
+        : selUser.uid + currentUser.uid;
+
+    console.log(currentUser.uid);
+    console.log(selUser.uid);
+    console.log(combinedId);
 
     try {
       const res = await getDoc(doc(db, "chats", combinedId));
 
-      if (!res.exists()) {
+      if (!res.exists() && currentUser.uid != selUser.uid) {
+        console.log("hi");
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
         //create users chats
         await updateDoc(doc(db, "userChats", currentUser.uid), {
           [combinedId + ".userInfo"]: {
-            uid: user.uid,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
+            uid: selUser.uid,
+            displayName: selUser.displayName,
+            photoURL: selUser.photoURL,
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
 
-        await updateDoc(doc(db, "userChats", user.uid), {
+        await updateDoc(doc(db, "userChats", selUser.uid), {
           [combinedId + ".userInfo"]: {
             uid: currentUser.uid,
             displayName: currentUser.displayName,
@@ -115,16 +123,17 @@ const Search = () => {
           onChange={(e) => handlseSetUser(e)}
           placeholder="Find Chats"
         />
-        {user && (
-          <SearchedUser>
-            <UserChat onClick={handleSelect}>
-              <img src={user.photoURL} alt="" />
-              <UserChatInfo>
-                <span>{user.displayName}</span>
-              </UserChatInfo>
-            </UserChat>
-          </SearchedUser>
-        )}
+        {user &&
+          user.map((filUserData, index) => (
+            <SearchedUser key={index}>
+              <UserChat onClick={() => handleSelect(filUserData)}>
+                <img src={filUserData.photoURL} alt="" />
+                <UserChatInfo>
+                  <span>{filUserData.displayName}</span>
+                </UserChatInfo>
+              </UserChat>
+            </SearchedUser>
+          ))}
       </FindUser>
     </div>
   );

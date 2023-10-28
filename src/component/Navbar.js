@@ -12,7 +12,9 @@ const Navbar = () => {
 
   // handle signOut
   const handleSignOut = () => {
-    signOut(auth);
+    window.location.reload();
+    setTimeout(signOut(auth), 9000);
+    // signOut(auth);
   };
 
   return (
